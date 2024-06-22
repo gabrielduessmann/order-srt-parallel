@@ -1,5 +1,9 @@
 1
-00:00:00,000 --> 00:00:30,000
+00:01:00,000 --> 00:00:30,000
+Subtitles downloaded from https://kickasssubtitles.com
+
+1
+04:00:00,000 --> 00:00:30,000
 Subtitles downloaded from https://kickasssubtitles.com
 
 2
@@ -8952,6 +8956,10 @@ I never let it in.
 2046
 03:03:18,596 --> 03:03:23,521
 ♪ and my heart will go on and on ♪
+
+2046
+00:00:00,001 --> 00:00:30,000
+Subtitles downloaded from https://kickasssubtitles.com
 
 2047
 03:03:23,772 --> 03:03:29,944

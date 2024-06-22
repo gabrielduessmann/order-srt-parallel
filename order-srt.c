@@ -5,43 +5,92 @@
 #include <string.h>
 #include <limits.h>
 
+#define MAX_SUBTITLES 50000000
+#define MAX_TIME_LEN 13 // Format "HH:MM:SS,mmm"    
+#define MAX_TEXT_LEN 200
+
+typedef struct {
+    char initial_time[MAX_TIME_LEN];
+    char final_time[MAX_TIME_LEN];
+    char text[MAX_TEXT_LEN];
+} Subtitle;
+
+void swap(Subtitle* a, Subtitle* b){
+  Subtitle t = *a;
+  *a = *b;
+  *b = t;
+}
+
+int partition(Subtitle * vetor, int low, int high){
+  char * pivot = vetor[high].initial_time;
+  int i = (low - 1);
+
+  for (int j = low; j <= high - 1; j++){
+    if (isLower(vetor[j].initial_time, pivot) == 1){
+      i++;
+      swap(&vetor[i], &vetor[j]);
+    }
+  }
+  swap(&vetor[i + 1], &vetor[high]);
+  return (i + 1);
+}
+
+void quicksort(Subtitle vetor[], int low, int high) {
+  if (low < high) {
+    int pivot = partition(vetor, low, high);
+    quicksort(vetor, low, pivot - 1);
+    quicksort(vetor, pivot + 1, high);
+  }
+}
+
 int main(int argc, char **argv){
-    FILE *file = fopen("subtitles.srt", "r");
-    if (file == NULL) {
-        fprintf(stderr, "Could not open file.\n");
+    Subtitle * subtitles = (Subtitle*) malloc(sizeof(Subtitle) * MAX_SUBTITLES);
+    int subtitle_count = 0;
+
+    FILE *file = fopen("generated_subtitles.srt", "r");
+    if (!file) {
+        perror("Could not open file");
         return 1;
     }
 
-    char start_time[13];
-    char end_time[13];
-    int subtitle_count = 0;
-    int temp;
-    char start_time_str[13] = "99:59:59,999";
-    char highest_time_str[13] = "00:00:00,000";
-    
-    while (fscanf(file, "%d\n", &temp) != EOF) {
-        if (fscanf(file, "%12s --> %12s\n", start_time, end_time) == 2) {
-            if (isLower(start_time, start_time_str) == 1) {
-                strcpy(start_time_str, start_time); 
+    while (subtitle_count < MAX_SUBTITLES) {
+        char line[256];
 
-                printf("lowest: %s \n", start_time_str);
-                
-            }
+        // Read index line (and ignore it)
+        if (!fgets(line, sizeof(line), file)) break;
 
-            if (isHigher(start_time, highest_time_str)) {
-                strcpy(highest_time_str, start_time); 
-            }
+        // Read time range line
+        if (!fgets(line, sizeof(line), file)) break;
+        sscanf(line, "%12s --> %12s", subtitles[subtitle_count].initial_time, subtitles[subtitle_count].final_time);
 
-            subtitle_count++;
+        // Read text lines
+        char text[MAX_TEXT_LEN] = "";
+        while (fgets(line, sizeof(line), file) && line[0] != '\n') {
+            strncat(text, line, sizeof(text) - strlen(text) - 1);
         }
+        strncpy(subtitles[subtitle_count].text, text, MAX_TEXT_LEN - 1);
+
+        subtitle_count++;
     }
 
-    printf("*** closed file \n");
     fclose(file);
 
-    printf("Total subtitles: %d\n", subtitle_count);
-    printf("Lowest initial time: %s\n", start_time_str);
-    printf("Highest initial time: %s\n", highest_time_str);
+    quicksort(subtitles, 0, subtitle_count - 1);
+
+    // Print parsed subtitles
+
+    printf("Resolved \n");
+    
+    /*
+    for (int i = 0; i < subtitle_count; i++) {
+        printf("Subtitle %d:\n", i + 1);
+        printf("Initial time: %s\n", subtitles[i].initial_time);
+        printf("Final time: %s\n", subtitles[i].final_time);
+        printf("Text: %s\n", subtitles[i].text);
+        printf("\n");
+    }
+
+    */
 
     return 0;
 }
