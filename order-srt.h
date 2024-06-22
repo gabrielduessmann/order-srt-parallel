@@ -127,3 +127,9 @@ int isHigher(char * a, char * b) {
     }
     return 0;
 }
+
+long timeToMilliseconds(const char *time) {
+    int hours, minutes, seconds, milliseconds;
+    sscanf(time, "%d:%d:%d,%d", &hours, &minutes, &seconds, &milliseconds);
+    return ((hours * 3600 + minutes * 60 + seconds) * 1000 + milliseconds);
+}
