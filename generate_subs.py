@@ -129,8 +129,8 @@ def write_srt_file(filename, subtitles):
             file.write(f"{subtitle['text']}\n\n")
 
 # Generate random subtitles and write to file
-num_subtitles = 50000000  # Number of subtitles to generate
+num_subtitles = 5000000  # Number of subtitles to generate
 subtitles = generate_subtitles(num_subtitles)
-write_srt_file("generated_subtitles.srt", subtitles)
+write_srt_file("generated_subtitles_5M.srt", subtitles)
 
 print("Generated SRT file: generated_subtitles.srt")

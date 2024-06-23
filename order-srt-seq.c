@@ -4,7 +4,6 @@
 #include <time.h>
 #include <string.h>
 #include <limits.h>
-#include <omp.h>
 
 #define MAX_SUBTITLES 50000000
 #define MAX_TIME_LEN 13 // Format "HH:MM:SS,mmm"    
@@ -39,15 +38,8 @@ int partition(Subtitle * vetor, int low, int high){
 void quicksort(Subtitle vetor[], int low, int high) {
   if (low < high) {
     int pivot = partition(vetor, low, high);
-    #pragma omp task
-    {
-        quicksort(vetor, low, pivot - 1);
-    }
-    #pragma omp task
-    {
-       quicksort(vetor, pivot + 1, high); 
-    }
-    
+    quicksort(vetor, low, pivot - 1);
+    quicksort(vetor, pivot + 1, high);  
     
   }
 }
@@ -92,15 +84,7 @@ int main(int argc, char **argv){
     printf("Read everything. Before qsort. \n");
     start = clock();
 
-    #pragma omp parallel 
-    {
-        #pragma omp single 
-        {
-            quicksort(subtitles, 0, subtitle_count - 1);
-        }
-        
-    }
-    
+    quicksort(subtitles, 0, subtitle_count - 1);    
 
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
