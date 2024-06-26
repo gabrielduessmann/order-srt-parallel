@@ -53,7 +53,7 @@ void quicksort(Subtitle vetor[], int low, int high) {
 }
 
 int main(int argc, char **argv){
-  // Check if the file name is provided as a command-line argument
+  // Check if file is specified
   if (argc != 2) {
       fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
       return 1;
@@ -74,24 +74,19 @@ int main(int argc, char **argv){
     start_read = omp_get_wtime();
 
     char *file_name = argv[1];
-    printf("File: %s \n", file_name);
     FILE *file = fopen(file_name, "r");
     if (!file) {
-        perror("Could not find file \n");
+        perror("File not found\n");
         return 1;
     }
-    
+
     while (subtitle_count < MAX_SUBTITLES) {
         char line[256];
-
-        // Read index line (and ignore it)
         if (!fgets(line, sizeof(line), file)) break;
 
-        // Read time range line
         if (!fgets(line, sizeof(line), file)) break;
         sscanf(line, "%12s --> %12s", subtitles[subtitle_count].initial_time, subtitles[subtitle_count].final_time);
 
-        // Read text lines
         char text[MAX_TEXT_LEN] = "";
         while (fgets(line, sizeof(line), file) && line[0] != '\n') {
             strncat(text, line, sizeof(text) - strlen(text) - 1);
@@ -103,26 +98,27 @@ int main(int argc, char **argv){
 
     fclose(file);
 
+
     end_read = omp_get_wtime();
     cpu_time_used = ((double) (end_read - start_read));
     printf("Time to read file: %f seconds\n", cpu_time_used);
 
     start_process = omp_get_wtime();
 
-    #pragma omp parallel 
+    #pragma omp parallel
     {
-        #pragma omp single 
+        #pragma omp single
         {
             quicksort(subtitles, 0, subtitle_count - 1);
         }
-        
+
     }
     end_process = omp_get_wtime();
     cpu_time_used = ((double) (end_process - start_process));
     printf("Time to process quick-sort: %f seconds\n", cpu_time_used);
 
     start_write = omp_get_wtime();
-    
+
     FILE *file_output = fopen("subtitles_result.srt", "w");
     if (!file_output) {
       perror("Could not open file");
@@ -139,7 +135,7 @@ int main(int argc, char **argv){
    end_write = omp_get_wtime();
 
    cpu_time_used = ((double) (end_write - start_write));
-   printf("Time to write: %f seconds\n", cpu_time_used);
+   printf("Time to write file: %f seconds \n", cpu_time_used);
 
    end = omp_get_wtime();
 

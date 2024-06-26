@@ -1,11 +1,7 @@
 Sequential:
-gcc order-srt-seq.c -o run-seq.o
-./run-seq.o <file_path>
+gcc algorithm/order-srt-seq.c -o results/run-seq.o
+./bin/run-seq.o files/<file_path>
 
 OpenMp
-gcc -Wall -g -o hello order-srt-omp.c -fopenmp -o run-omp.o
-./run-omp.o <file_path>
-
-MPI: 
-mpicc order-srt-mpi.c -o run-mpi.o 
-mpirun --machinefile  hosts.txt --mca btl_tcp_if_include 10.20.221.0/24 run-mpi.o <file_path>
+gcc -Wall -g algorithm/order-srt-omp.c -fopenmp -o bin/run-omp.o
+./bin/run-omp.o files/<file_path>
